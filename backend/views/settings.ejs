@@ -1,0 +1,278 @@
+<%- include('partials/header') %>
+
+<div class="container-fluid">
+  <div class="row">
+    <!-- Sidebar -->
+    <nav class="col-md-auto sidebar">
+      <div class="position-sticky pt-3">
+        <ul class="nav flex-column">
+          <li class="nav-item">
+            <a class="nav-link" href="/dashboard">
+              <i class="fas fa-chart-line"></i>
+              Dashboard
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/transactions/add">
+              <i class="fas fa-plus-circle"></i>
+              Add Transaction
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/transactions/list">
+              <i class="fas fa-list-ul"></i>
+              All Transactions
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/upload">
+              <i class="fas fa-cloud-upload-alt"></i>
+              Bulk Upload
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/export">
+              <i class="fas fa-file-export"></i>
+              Export Reports
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/audit">
+              <i class="fas fa-history"></i>
+              Audit Logs
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" href="/settings">
+              <i class="fas fa-cog"></i>
+              Settings
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/auth/logout">
+              <i class="fas fa-sign-out-alt"></i>
+              Logout
+            </a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <div class="page-header fade-in">
+        <h1>
+          <i class="fas fa-cog"></i>
+          Settings
+        </h1>
+      </div>
+
+      <% if (error) { %>
+        <div class="alert alert-danger fade-in">
+          <i class="fas fa-exclamation-triangle"></i>
+          <%= error %>
+        </div>
+      <% } %>
+
+      <% if (success) { %>
+        <div class="alert alert-success fade-in">
+          <i class="fas fa-check-circle"></i>
+          <%= success %>
+        </div>
+      <% } %>
+
+      <div class="row">
+        <!-- Left Column - Settings Form -->
+        <div class="col-lg-8 mb-4">
+          <div class="card shadow-lg fade-in">
+            <div class="card-header">
+              <i class="fas fa-sliders-h"></i>
+              Application Settings
+            </div>
+            <div class="card-body">
+              <form method="POST" action="/settings">
+                <!-- Fraud Alert Threshold -->
+                <div class="mb-4">
+                  <label class="form-label">
+                    <i class="fas fa-percentage"></i>
+                    Fraud Alert Threshold
+                  </label>
+                  <input 
+                    type="number" 
+                    step="0.01" 
+                    min="0" 
+                    max="1" 
+                    name="fraud_threshold" 
+                    class="form-control" 
+                    value="<%= settings.fraud_threshold || '0.7' %>"
+                  >
+                  <div class="form-text">
+                    <i class="fas fa-info-circle"></i>
+                    Probability threshold for high-risk alerts (0 = never, 1 = always). Current: <%= ((settings.fraud_threshold || 0.7) * 100).toFixed(0) %>%
+                  </div>
+                </div>
+
+                <!-- Alert Email -->
+                <div class="mb-4">
+                  <label class="form-label">
+                    <i class="fas fa-envelope"></i>
+                    Alert Email Address
+                  </label>
+                  <input 
+                    type="email" 
+                    name="alert_email" 
+                    class="form-control" 
+                    value="<%= settings.alert_email || '' %>"
+                    placeholder="admin@example.com"
+                  >
+                  <div class="form-text">
+                    <i class="fas fa-info-circle"></i>
+                    Email address to receive fraud alerts
+                  </div>
+                </div>
+
+                <!-- Daily Reports -->
+                <div class="mb-4">
+                  <label class="form-label">
+                    <i class="fas fa-calendar-day"></i>
+                    Daily Reports
+                  </label>
+                  <select name="daily_report" class="form-select">
+                    <option value="false" <%= settings.daily_report === 'false' ? 'selected' : '' %>>Disabled</option>
+                    <option value="true" <%= settings.daily_report === 'true' ? 'selected' : '' %>>Enabled</option>
+                  </select>
+                  <div class="form-text">
+                    <i class="fas fa-info-circle"></i>
+                    Receive daily fraud summary reports via email
+                  </div>
+                </div>
+
+                <!-- Save Button -->
+                <button type="submit" class="btn btn-primary">
+                  <i class="fas fa-save"></i>
+                  Save Settings
+                </button>
+              </form>
+            </div>
+          </div>
+
+          <!-- Danger Zone -->
+          <div class="card shadow-lg mt-4 fade-in">
+            <div class="card-header bg-danger text-white">
+              <i class="fas fa-exclamation-triangle"></i>
+              Danger Zone
+            </div>
+            <div class="card-body">
+              <p class="text-muted">
+                <i class="fas fa-skull-crossbones"></i>
+                These actions cannot be undone. Use with extreme caution.
+              </p>
+              <div class="d-grid gap-2 d-md-flex">
+                <button class="btn btn-outline-danger" disabled>
+                  <i class="fas fa-trash"></i>
+                  Clear All Transactions
+                </button>
+                <button class="btn btn-outline-danger" disabled>
+                  <i class="fas fa-sync-alt"></i>
+                  Reset Database
+                </button>
+              </div>
+              <small class="text-muted d-block mt-2">
+                <i class="fas fa-lock"></i>
+                Contact administrator to enable these actions
+              </small>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column - Info Cards -->
+        <div class="col-lg-4 mb-4">
+          <!-- System Info -->
+          <div class="card shadow-lg mb-4 fade-in">
+            <div class="card-header">
+              <i class="fas fa-server"></i>
+              System Information
+            </div>
+            <div class="card-body">
+              <div class="mb-3">
+                <h6>
+                  <i class="fas fa-code-branch text-primary"></i>
+                  Version
+                </h6>
+                <p class="text-muted small mb-0">1.0.0</p>
+              </div>
+              
+              <div class="mb-3">
+                <h6>
+                  <i class="fas fa-database text-success"></i>
+                  Database
+                </h6>
+                <p class="text-muted small mb-0">MySQL</p>
+              </div>
+              
+              <div class="mb-3">
+                <h6>
+                  <i class="fab fa-node-js text-success"></i>
+                  Node.js Version
+                </h6>
+                <p class="text-muted small mb-0"><%= process.version %></p>
+              </div>
+              
+              <div>
+                <h6>
+                  <i class="fas fa-clock text-info"></i>
+                  Uptime
+                </h6>
+                <p class="text-muted small mb-0"><%= Math.floor(process.uptime() / 60) %> minutes</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Email Config -->
+          <div class="card shadow-lg fade-in">
+            <div class="card-header">
+              <i class="fas fa-envelope"></i>
+              Email Configuration
+            </div>
+            <div class="card-body">
+              <div class="text-center mb-3">
+                <% if (process.env.EMAIL_USER) { %>
+                  <span class="badge bg-success" style="font-size: 1rem; padding: 0.75rem 1.5rem;">
+                    <i class="fas fa-check-circle"></i>
+                    ENABLED
+                  </span>
+                <% } else { %>
+                  <span class="badge bg-warning" style="font-size: 1rem; padding: 0.75rem 1.5rem;">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    DISABLED
+                  </span>
+                <% } %>
+              </div>
+              <p class="text-muted small text-center mb-0">
+                <i class="fas fa-info-circle"></i>
+                Configure in your .env file
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script>
+// Show toast on settings save
+<% if (success) { %>
+  if (typeof toast !== 'undefined') {
+    toast.success('Settings Saved!', '<%= success %>', 5000);
+  }
+<% } %>
+
+<% if (error) { %>
+  if (typeof toast !== 'undefined') {
+    toast.error('Error!', '<%= error %>', 5000);
+  }
+<% } %>
+</script>
+
+<%- include('partials/footer') %>
