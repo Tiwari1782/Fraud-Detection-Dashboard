@@ -927,17 +927,6 @@ NODE_ENV=production
 
 ---
 
-## 🤝 Contributing
-
-Contributions are welcome! This is a learning project open for improvements.
-
-### How to Contribute
-
-1. **Fork** the repository
-2. **Create** feature branch (`git checkout -b feature/AmazingFeature`)
-3. **Commit** changes (`git commit -m 'Add AmazingFeature'`)
-4. **Push** to branch (`git push origin feature/AmazingFeature`)
-5. **Open** Pull Request
 
 ### Development Guidelines
 
@@ -951,8 +940,6 @@ Contributions are welcome! This is a learning project open for improvements.
 ## 📄 License
 
 This project is open-source and available for educational purposes.
-
-**License:** MIT
 
 ---
 
@@ -977,12 +964,7 @@ Full Stack Developer | AI Enthusiast
 
 - 🌐 GitHub: [@Tiwari1782](https://github.com/Tiwari1782)
 - 📧 Email: prakashtiwarie06@gmail.com
-- 💼 LinkedIn: [Prakash Tiwari](https://linkedin.com/in/yourprofile)
-- 🚀 Portfolio: [Coming Soon]
-
 ---
-
-## 📞 Support
 
 ### Need Help?
 
@@ -1021,7 +1003,7 @@ If this project helped you learn or solve a problem, please consider:
 ---
 
 [![GitHub followers](https://img.shields.io/github/followers/Tiwari1782?style=social)](https://github.com/Tiwari1782)
-[![GitHub stars](https://img.shields.io/github/stars/Tiwari1782/ai-fraud-detection-dashboard?style=social)](https://github.com/Tiwari1782/ai-fraud-detection-dashboard)
+[![GitHub stars](https://img.shields.io/github/stars/Tiwari1782/Fraud-Detection-Dashboard?style=social)](https://github.com/Tiwari1782/Fraud-Detection-Dashboard)
 
 **⭐ Star this repo if you found it helpful!**
 
