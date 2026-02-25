@@ -4,25 +4,30 @@ require('dotenv').config();
 let sequelize;
 
 if (process.env.DATABASE_URL) {
-  // Render provides DATABASE_URL for MySQL
+  // Production - External MySQL (Railway)
+  console.log('🔗 Connecting to external MySQL database...');
+  
   sequelize = new Sequelize(process.env.DATABASE_URL, {
     dialect: 'mysql',
     dialectOptions: {
       ssl: {
         require: true,
         rejectUnauthorized: false
-      }
+      },
+      connectTimeout: 60000
     },
-    logging: process.env.NODE_ENV === 'development' ? console.log : false,
+    logging: false,
     pool: {
       max: 5,
       min: 0,
-      acquire: 30000,
+      acquire: 60000,
       idle: 10000
     }
   });
 } else {
-  // Local development
+  // Local development - MySQL
+  console.log('🔗 Connecting to local MySQL database...');
+  
   sequelize = new Sequelize(
     process.env.DB_NAME || 'fraud_detection_db',
     process.env.DB_USER || 'root',
