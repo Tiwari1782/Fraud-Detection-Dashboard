@@ -1,0 +1,279 @@
+<%- include('partials/header') %>
+
+<div class="container-fluid">
+  <div class="row">
+    <!-- Sidebar -->
+    <nav class="col-md-auto sidebar">
+      <div class="position-sticky pt-3">
+        <ul class="nav flex-column">
+          <li class="nav-item">
+            <a class="nav-link" href="/dashboard">
+              <i class="fas fa-chart-line"></i>
+              Dashboard
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/transactions/add">
+              <i class="fas fa-plus-circle"></i>
+              Add Transaction
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/transactions/list">
+              <i class="fas fa-list-ul"></i>
+              All Transactions
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/upload">
+              <i class="fas fa-cloud-upload-alt"></i>
+              Bulk Upload
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" href="/export">
+              <i class="fas fa-file-export"></i>
+              Export Reports
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/audit">
+              <i class="fas fa-history"></i>
+              Audit Logs
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/settings">
+              <i class="fas fa-cog"></i>
+              Settings
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/auth/logout">
+              <i class="fas fa-sign-out-alt"></i>
+              Logout
+            </a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <div class="page-header fade-in">
+        <h1>
+          <i class="fas fa-file-export"></i>
+          Export Reports
+        </h1>
+      </div>
+
+      <% if (message) { %>
+        <div class="alert alert-info fade-in">
+          <i class="fas fa-info-circle"></i>
+          <%= message %>
+        </div>
+      <% } %>
+
+      <div class="row">
+        <!-- Left Column - Export Form -->
+        <div class="col-lg-8 mb-4">
+          <div class="card shadow-lg fade-in">
+            <div class="card-header">
+              <i class="fas fa-download"></i>
+              Export Transaction Data
+            </div>
+            <div class="card-body">
+              <form id="exportForm">
+                <!-- Date Range -->
+                <div class="mb-4">
+                  <label class="form-label">
+                    <i class="fas fa-calendar-alt"></i>
+                    Date Range (Optional)
+                  </label>
+                  <div class="row">
+                    <div class="col-md-6 mb-2">
+                      <input type="date" name="startDate" class="form-control" placeholder="Start Date">
+                    </div>
+                    <div class="col-md-6 mb-2">
+                      <input type="date" name="endDate" class="form-control" placeholder="End Date">
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Filter by Prediction -->
+                <div class="mb-4">
+                  <label class="form-label">
+                    <i class="fas fa-filter"></i>
+                    Filter by Prediction
+                  </label>
+                  <select name="prediction" class="form-select">
+                    <option value="">All Transactions</option>
+                    <option value="fraud">Fraud Only</option>
+                    <option value="legitimate">Legitimate Only</option>
+                  </select>
+                </div>
+
+                <!-- Export Buttons Section -->
+                <div class="mb-3">
+                  <label class="form-label">
+                    <i class="fas fa-file-download"></i>
+                    Choose Export Format
+                  </label>
+                </div>
+
+                <!-- Buttons in a Grid -->
+                <div class="row mb-3">
+                  <div class="col-md-4 mb-3">
+                    <button type="button" class="btn btn-success w-100 py-3" onclick="exportData('csv')" style="font-size: 1rem;">
+                      <i class="fas fa-file-csv fa-lg"></i><br>
+                      <strong>Export CSV</strong>
+                    </button>
+                  </div>
+                  <div class="col-md-4 mb-3">
+                    <button type="button" class="btn btn-primary w-100 py-3" onclick="exportData('json')" style="font-size: 1rem;">
+                      <i class="fas fa-file-code fa-lg"></i><br>
+                      <strong>Export JSON</strong>
+                    </button>
+                  </div>
+                  <div class="col-md-4 mb-3">
+                    <button type="button" class="btn btn-danger w-100 py-3" onclick="exportData('pdf')" style="font-size: 1rem;">
+                      <i class="fas fa-file-pdf fa-lg"></i><br>
+                      <strong>Export PDF</strong>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Alternative: Stack Buttons for Better Visibility -->
+                <div class="d-grid gap-3">
+                  <button type="button" class="btn btn-success btn-lg" onclick="exportData('csv')">
+                    <i class="fas fa-file-csv"></i>
+                    Export as CSV (Excel Compatible)
+                  </button>
+                  <button type="button" class="btn btn-primary btn-lg" onclick="exportData('json')">
+                    <i class="fas fa-file-code"></i>
+                    Export as JSON (API Ready)
+                  </button>
+                  <button type="button" class="btn btn-danger btn-lg" onclick="exportData('pdf')">
+                    <i class="fas fa-file-pdf"></i>
+                    Export as PDF (Professional Report)
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <!-- Email Alerts Card -->
+          <div class="card shadow-lg mt-4 fade-in">
+            <div class="card-header">
+              <i class="fas fa-envelope"></i>
+              Email Alerts
+            </div>
+            <div class="card-body">
+              <p>
+                <i class="fas fa-bell text-warning"></i>
+                High-risk transactions (≥70% fraud probability) trigger automatic email alerts.
+              </p>
+              <p class="text-muted mb-0">
+                <i class="fas fa-info-circle"></i>
+                <small>Configure email settings in your .env file to enable this feature.</small>
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column - Info -->
+        <div class="col-lg-4 mb-4">
+          <div class="card shadow-lg fade-in">
+            <div class="card-header">
+              <i class="fas fa-info-circle"></i>
+              Export Information
+            </div>
+            <div class="card-body">
+              <div class="mb-3 pb-3 border-bottom">
+                <h6 class="mb-2">
+                  <i class="fas fa-file-csv text-success"></i>
+                  CSV Format
+                </h6>
+                <p class="text-muted small mb-0">Excel-compatible spreadsheet format. Perfect for data analysis and reporting.</p>
+              </div>
+              
+              <div class="mb-3 pb-3 border-bottom">
+                <h6 class="mb-2">
+                  <i class="fas fa-file-code text-primary"></i>
+                  JSON Format
+                </h6>
+                <p class="text-muted small mb-0">API-ready structured data. Ideal for developers and integrations.</p>
+              </div>
+              
+              <div class="mb-3 pb-3 border-bottom">
+                <h6 class="mb-2">
+                  <i class="fas fa-file-pdf text-danger"></i>
+                  PDF Format
+                </h6>
+                <p class="text-muted small mb-0">Professional report with summary. Best for presentations and documentation.</p>
+              </div>
+              
+              <div class="mb-3 pb-3 border-bottom">
+                <h6 class="mb-2">
+                  <i class="fas fa-filter text-info"></i>
+                  Filters Available
+                </h6>
+                <p class="text-muted small mb-0">Date range and prediction type filtering supported.</p>
+              </div>
+              
+              <div>
+                <h6 class="mb-2">
+                  <i class="fas fa-infinity text-warning"></i>
+                  No Limits
+                </h6>
+                <p class="text-muted small mb-0">Exports all matching records without pagination.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script>
+function exportData(format) {
+  const form = document.getElementById('exportForm');
+  const formData = new FormData(form);
+  
+  const params = new URLSearchParams();
+  for (const [key, value] of formData) {
+    if (value) {
+      params.append(key, value);
+    }
+  }
+  
+  const url = `/export/${format}?${params.toString()}`;
+  
+  console.log('Exporting to:', url); // Debug
+  
+  // Show loading toast
+  if (typeof toast !== 'undefined') {
+    const formatUpper = format.toUpperCase();
+    toast.info('Exporting...', `Preparing ${formatUpper} file for download`, 3000);
+  }
+  
+  // Trigger download
+  window.location.href = url;
+  
+  // Success message after 1 second
+  setTimeout(() => {
+    if (typeof toast !== 'undefined') {
+      toast.success('Export Started', 'Your download should begin shortly', 3000);
+    }
+  }, 1000);
+}
+
+// Test function - you can call this from console
+window.testExport = function() {
+  console.log('Test export function loaded');
+  exportData('csv');
+};
+</script>
+
+<%- include('partials/footer') %>
