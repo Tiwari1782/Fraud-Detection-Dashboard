@@ -1,0 +1,204 @@
+<%- include('partials/header') %>
+
+<div class="container-fluid">
+  <div class="row">
+    <!-- Sidebar -->
+    <nav class="col-md-auto sidebar">
+      <div class="position-sticky pt-3">
+        <ul class="nav flex-column">
+          <li class="nav-item">
+            <a class="nav-link active" href="/dashboard">
+              <i class="fas fa-chart-line"></i>
+              Dashboard
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/transactions/add">
+              <i class="fas fa-plus-circle"></i>
+              Add Transaction
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/transactions/list">
+              <i class="fas fa-list-ul"></i>
+              All Transactions
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/upload">
+              <i class="fas fa-cloud-upload-alt"></i>
+              Bulk Upload
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/export">
+              <i class="fas fa-file-export"></i>
+              Export Reports
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/audit">
+              <i class="fas fa-history"></i>
+              Audit Logs
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/settings">
+              <i class="fas fa-cog"></i>
+              Settings
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/auth/logout">
+              <i class="fas fa-sign-out-alt"></i>
+              Logout
+            </a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Page Header -->
+      <div class="page-header fade-in">
+        <h1>
+          <i class="fas fa-chart-pie"></i>
+          Dashboard Overview
+        </h1>
+        <div>
+          <span class="badge bg-primary">
+            <i class="fas fa-sync-alt"></i>
+            Live Data
+          </span>
+        </div>
+      </div>
+
+      <!-- KPI Cards -->
+      <div class="row mb-4 fade-in">
+        <div class="col-md-3 mb-3">
+          <div class="kpi-card primary">
+            <i class="fas fa-exchange-alt"></i>
+            <h5>Total Transactions</h5>
+            <h2><%= totalTransactions %></h2>
+          </div>
+        </div>
+        <div class="col-md-3 mb-3">
+          <div class="kpi-card danger">
+            <i class="fas fa-exclamation-triangle"></i>
+            <h5>Fraud Detected</h5>
+            <h2><%= fraudCount %></h2>
+          </div>
+        </div>
+        <div class="col-md-3 mb-3">
+          <div class="kpi-card warning">
+            <i class="fas fa-percentage"></i>
+            <h5>Fraud Rate</h5>
+            <h2><%= fraudRate %>%</h2>
+          </div>
+        </div>
+        <div class="col-md-3 mb-3">
+          <div class="kpi-card success">
+            <i class="fas fa-check-circle"></i>
+            <h5>Legitimate</h5>
+            <h2><%= totalTransactions - fraudCount %></h2>
+          </div>
+        </div>
+      </div>
+
+      <!-- Charts -->
+      <div class="row mb-4 fade-in">
+        <div class="col-md-6 mb-4">
+          <div class="card shadow-lg">
+            <div class="card-header">
+              <i class="fas fa-chart-pie"></i>
+              Fraud vs Legitimate
+            </div>
+            <div class="card-body">
+              <canvas id="fraudPieChart"></canvas>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 mb-4">
+          <div class="card shadow-lg">
+            <div class="card-header">
+              <i class="fas fa-mobile-alt"></i>
+              Device Analysis
+            </div>
+            <div class="card-body">
+              <canvas id="deviceChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row mb-4 fade-in">
+        <div class="col-md-12">
+          <div class="card shadow-lg">
+            <div class="card-header">
+              <i class="fas fa-chart-line"></i>
+              Fraud Trend (Last 30 Days)
+            </div>
+            <div class="card-body">
+              <canvas id="trendChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- High-Risk Transactions -->
+      <div class="row mb-4 fade-in">
+        <div class="col-md-12">
+          <div class="card shadow-lg">
+            <div class="card-header">
+              <i class="fas fa-exclamation-circle"></i>
+              High-Risk Transactions
+            </div>
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="table table-hover">
+                  <thead>
+                    <tr>
+                      <th><i class="fas fa-hashtag"></i> ID</th>
+                      <th><i class="fas fa-dollar-sign"></i> Amount</th>
+                      <th><i class="fas fa-laptop"></i> Device</th>
+                      <th><i class="fas fa-map-marker-alt"></i> Location</th>
+                      <th><i class="fas fa-percentage"></i> Probability</th>
+                      <th><i class="fas fa-clock"></i> Time</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% if (highRiskTransactions.length === 0) { %>
+                      <tr><td colspan="6" class="text-center text-muted">No high-risk transactions</td></tr>
+                    <% } else { %>
+                      <% highRiskTransactions.forEach(t => { %>
+                        <tr>
+                          <td><strong>#<%= t.id %></strong></td>
+                          <td><strong>$<%= t.amount %></strong></td>
+                          <td><%= t.device_type %></td>
+                          <td><%= t.location %></td>
+                          <td>
+                            <span class="badge bg-danger">
+                              <i class="fas fa-fire"></i>
+                              <%= (t.fraud_probability * 100).toFixed(1) %>%
+                            </span>
+                          </td>
+                          <td><%= new Date(t.transaction_time).toLocaleString() %></td>
+                        </tr>
+                      <% }); %>
+                    <% } %>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="/js/dashboard.js"></script>
+
+<%- include('partials/footer') %>
