@@ -1,0 +1,164 @@
+<%- include('partials/header') %>
+
+<div class="container-fluid">
+  <div class="row">
+    <!-- Sidebar -->
+    <nav class="col-md-auto sidebar">
+      <div class="position-sticky pt-3">
+        <ul class="nav flex-column">
+          <li class="nav-item">
+            <a class="nav-link" href="/dashboard">
+              <i class="fas fa-chart-line"></i>
+              Dashboard
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/transactions/add">
+              <i class="fas fa-plus-circle"></i>
+              Add Transaction
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/transactions/list">
+              <i class="fas fa-list-ul"></i>
+              All Transactions
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/upload">
+              <i class="fas fa-cloud-upload-alt"></i>
+              Bulk Upload
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/export">
+              <i class="fas fa-file-export"></i>
+              Export Reports
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" href="/audit">
+              <i class="fas fa-history"></i>
+              Audit Logs
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/settings">
+              <i class="fas fa-cog"></i>
+              Settings
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/auth/logout">
+              <i class="fas fa-sign-out-alt"></i>
+              Logout
+            </a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <div class="page-header fade-in">
+        <h1>
+          <i class="fas fa-history"></i>
+          Audit Logs
+        </h1>
+        <span class="badge bg-primary">
+          <i class="fas fa-database"></i>
+          Total: <%= totalCount %>
+        </span>
+      </div>
+
+      <div class="card shadow-lg fade-in">
+        <div class="card-header">
+          <i class="fas fa-file-alt"></i>
+          Activity Log
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th><i class="fas fa-hashtag"></i> ID</th>
+                  <th><i class="fas fa-user"></i> Admin</th>
+                  <th><i class="fas fa-bolt"></i> Action</th>
+                  <th><i class="fas fa-network-wired"></i> IP Address</th>
+                  <th><i class="fas fa-clock"></i> Timestamp</th>
+                  <th><i class="fas fa-info-circle"></i> Details</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% if (logs.length === 0) { %>
+                  <tr><td colspan="6" class="text-center text-muted">
+                    <i class="fas fa-inbox"></i> No audit logs found
+                  </td></tr>
+                <% } else { %>
+                  <% logs.forEach(log => { %>
+                    <tr>
+                      <td><strong>#<%= log.id %></strong></td>
+                      <td>
+                        <i class="fas fa-user-shield"></i>
+                        <%= log.Admin ? log.Admin.username : 'Unknown' %>
+                      </td>
+                      <td>
+                        <span class="badge bg-info">
+                          <i class="fas fa-tag"></i>
+                          <%= log.action %>
+                        </span>
+                      </td>
+                      <td><%= log.ip_address %></td>
+                      <td><%= new Date(log.created_at).toLocaleString() %></td>
+                      <td>
+                        <button class="btn btn-sm btn-secondary" onclick="showDetails('<%= log.id %>')">
+                          <i class="fas fa-eye"></i>
+                          View
+                        </button>
+                      </td>
+                    </tr>
+                  <% }); %>
+                <% } %>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Pagination -->
+          <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center">
+              <% if (currentPage > 1) { %>
+                <li class="page-item">
+                  <a class="page-link" href="?page=<%= currentPage - 1 %>">
+                    <i class="fas fa-chevron-left"></i> Previous
+                  </a>
+                </li>
+              <% } %>
+
+              <% for (let i = Math.max(1, currentPage - 2); i <= Math.min(totalPages, currentPage + 2); i++) { %>
+                <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+                  <a class="page-link" href="?page=<%= i %>"><%= i %></a>
+                </li>
+              <% } %>
+
+              <% if (currentPage < totalPages) { %>
+                <li class="page-item">
+                  <a class="page-link" href="?page=<%= currentPage + 1 %>">
+                    Next <i class="fas fa-chevron-right"></i>
+                  </a>
+                </li>
+              <% } %>
+            </ul>
+          </nav>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script>
+function showDetails(id) {
+  alert('Audit log details for ID: ' + id + '\n(Full implementation pending)');
+}
+</script>
+
+<%- include('partials/footer') %>
