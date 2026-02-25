@@ -1,0 +1,255 @@
+<%- include('partials/header') %>
+
+<div class="container-fluid">
+  <div class="row">
+    <!-- Sidebar -->
+    <nav class="col-md-auto sidebar">
+      <div class="position-sticky pt-3">
+        <ul class="nav flex-column">
+          <li class="nav-item">
+            <a class="nav-link" href="/dashboard">
+              <i class="fas fa-chart-line"></i>
+              Dashboard
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/transactions/add">
+              <i class="fas fa-plus-circle"></i>
+              Add Transaction
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" href="/transactions/list">
+              <i class="fas fa-list-ul"></i>
+              All Transactions
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/upload">
+              <i class="fas fa-cloud-upload-alt"></i>
+              Bulk Upload
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/export">
+              <i class="fas fa-file-export"></i>
+              Export Reports
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/audit">
+              <i class="fas fa-history"></i>
+              Audit Logs
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/settings">
+              <i class="fas fa-cog"></i>
+              Settings
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/auth/logout">
+              <i class="fas fa-sign-out-alt"></i>
+              Logout
+            </a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <div class="page-header fade-in">
+        <h1>
+          <i class="fas fa-list-ul"></i>
+          All Transactions
+        </h1>
+        <div>
+          <span class="badge bg-primary">
+            <i class="fas fa-database"></i>
+            Total: <%= totalCount %>
+          </span>
+        </div>
+      </div>
+
+      <!-- Filters -->
+      <div class="card shadow-lg mb-3 fade-in">
+        <div class="card-header">
+          <i class="fas fa-filter"></i>
+          Filters
+        </div>
+        <div class="card-body">
+          <form method="GET" action="/transactions/list" class="row g-3">
+            <div class="col-md-2">
+              <label class="form-label">
+                <i class="fas fa-exclamation-circle"></i>
+                Prediction
+              </label>
+              <select name="prediction" class="form-select">
+                <option value="">All</option>
+                <option value="fraud" <%= filter.prediction === 'fraud' ? 'selected' : '' %>>Fraud</option>
+                <option value="legitimate" <%= filter.prediction === 'legitimate' ? 'selected' : '' %>>Legitimate</option>
+              </select>
+            </div>
+            <div class="col-md-2">
+              <label class="form-label">
+                <i class="fas fa-mobile-alt"></i>
+                Device
+              </label>
+              <select name="device_type" class="form-select">
+                <option value="">All</option>
+                <option value="Mobile" <%= filter.device_type === 'Mobile' ? 'selected' : '' %>>Mobile</option>
+                <option value="Desktop" <%= filter.device_type === 'Desktop' ? 'selected' : '' %>>Desktop</option>
+                <option value="Tablet" <%= filter.device_type === 'Tablet' ? 'selected' : '' %>>Tablet</option>
+                <option value="POS" <%= filter.device_type === 'POS' ? 'selected' : '' %>>POS</option>
+              </select>
+            </div>
+            <div class="col-md-2">
+              <label class="form-label">
+                <i class="fas fa-dollar-sign"></i>
+                Min Amount
+              </label>
+              <input type="number" name="minAmount" class="form-control" value="<%= filter.minAmount %>" placeholder="0">
+            </div>
+            <div class="col-md-2">
+              <label class="form-label">
+                <i class="fas fa-dollar-sign"></i>
+                Max Amount
+              </label>
+              <input type="number" name="maxAmount" class="form-control" value="<%= filter.maxAmount %>" placeholder="100000">
+            </div>
+            <div class="col-md-2">
+              <label class="form-label">
+                <i class="fas fa-sort"></i>
+                Sort By
+              </label>
+              <select name="sortBy" class="form-select">
+                <option value="created_at" <%= filter.sortBy === 'created_at' ? 'selected' : '' %>>Date</option>
+                <option value="amount" <%= filter.sortBy === 'amount' ? 'selected' : '' %>>Amount</option>
+                <option value="fraud_probability" <%= filter.sortBy === 'fraud_probability' ? 'selected' : '' %>>Risk</option>
+              </select>
+            </div>
+            <div class="col-md-2">
+              <label class="form-label">&nbsp;</label>
+              <button type="submit" class="btn btn-primary w-100">
+                <i class="fas fa-search"></i>
+                Filter
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Transactions Table -->
+      <div class="card shadow-lg fade-in">
+        <div class="card-header">
+          <i class="fas fa-table"></i>
+          Transaction Records
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th><i class="fas fa-hashtag"></i> ID</th>
+                  <th><i class="fas fa-dollar-sign"></i> Amount</th>
+                  <th><i class="fas fa-clock"></i> Time</th>
+                  <th><i class="fas fa-laptop"></i> Device</th>
+                  <th><i class="fas fa-map-marker-alt"></i> Location</th>
+                  <th><i class="fas fa-shield-alt"></i> Prediction</th>
+                  <th><i class="fas fa-percentage"></i> Probability</th>
+                  <th><i class="fas fa-calendar"></i> Created</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% if (transactions.length === 0) { %>
+                  <tr><td colspan="8" class="text-center text-muted">
+                    <i class="fas fa-inbox"></i> No transactions found
+                  </td></tr>
+                <% } else { %>
+                  <% transactions.forEach(t => { %>
+                    <tr>
+                      <td><strong>#<%= t.id %></strong></td>
+                      <td><strong>$<%= parseFloat(t.amount).toFixed(2) %></strong></td>
+                      <td><%= new Date(t.transaction_time).toLocaleString() %></td>
+                      <td><%= t.device_type %></td>
+                      <td><%= t.location %></td>
+                      <td>
+                        <% if (t.prediction === 'fraud') { %>
+                          <span class="badge bg-danger">
+                            <i class="fas fa-times-circle"></i>
+                            Fraud
+                          </span>
+                        <% } else if (t.prediction === 'legitimate') { %>
+                          <span class="badge bg-success">
+                            <i class="fas fa-check-circle"></i>
+                            Legitimate
+                          </span>
+                        <% } else { %>
+                          <span class="badge bg-secondary">
+                            <i class="fas fa-question-circle"></i>
+                            Unknown
+                          </span>
+                        <% } %>
+                      </td>
+                      <td>
+                        <% const prob = (t.fraud_probability * 100).toFixed(1); %>
+                        <% if (prob >= 70) { %>
+                          <span class="badge bg-danger">
+                            <i class="fas fa-fire"></i>
+                            <%= prob %>%
+                          </span>
+                        <% } else if (prob >= 40) { %>
+                          <span class="badge bg-warning">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <%= prob %>%
+                          </span>
+                        <% } else { %>
+                          <span class="badge bg-success">
+                            <i class="fas fa-check"></i>
+                            <%= prob %>%
+                          </span>
+                        <% } %>
+                      </td>
+                      <td><small><%= new Date(t.created_at).toLocaleString() %></small></td>
+                    </tr>
+                  <% }); %>
+                <% } %>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Pagination -->
+          <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center">
+              <% if (currentPage > 1) { %>
+                <li class="page-item">
+                  <a class="page-link" href="?page=<%= currentPage - 1 %>&prediction=<%= filter.prediction %>&device_type=<%= filter.device_type %>&sortBy=<%= filter.sortBy %>">
+                    <i class="fas fa-chevron-left"></i> Previous
+                  </a>
+                </li>
+              <% } %>
+
+              <% for (let i = Math.max(1, currentPage - 2); i <= Math.min(totalPages, currentPage + 2); i++) { %>
+                <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+                  <a class="page-link" href="?page=<%= i %>&prediction=<%= filter.prediction %>&device_type=<%= filter.device_type %>&sortBy=<%= filter.sortBy %>"><%= i %></a>
+                </li>
+              <% } %>
+
+              <% if (currentPage < totalPages) { %>
+                <li class="page-item">
+                  <a class="page-link" href="?page=<%= currentPage + 1 %>&prediction=<%= filter.prediction %>&device_type=<%= filter.device_type %>&sortBy=<%= filter.sortBy %>">
+                    Next <i class="fas fa-chevron-right"></i>
+                  </a>
+                </li>
+              <% } %>
+            </ul>
+          </nav>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<%- include('partials/footer') %>

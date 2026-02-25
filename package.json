@@ -1,24 +1,14 @@
 {
   "name": "ai-fraud-detection-dashboard",
   "version": "1.0.0",
-  "description": "AI-powered fraud detection dashboard with real-time monitoring",
+  "description": "AI-powered fraud detection dashboard",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
-    "create-admin": "node createAdmin.js",
-    "check-admin": "node checkAdmin.js",
-    "production": "NODE_ENV=production node server.js"
+    "build": "echo 'No build step required'",
+    "create-admin": "node createAdmin.js"
   },
-  "keywords": [
-    "fraud-detection",
-    "ai",
-    "dashboard",
-    "security",
-    "machine-learning"
-  ],
-  "author": "Your Name",
-  "license": "MIT",
   "engines": {
     "node": ">=14.0.0",
     "npm": ">=6.0.0"

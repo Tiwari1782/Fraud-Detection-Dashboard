@@ -3,9 +3,12 @@ const express = require('express');
 const session = require('express-session');
 const path = require('path');
 const sequelize = require('./backend/config/database');
-const debugRoutes = require('./backend/routes/debugRoutes');
+
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// Trust proxy (important for Render)
+app.set('trust proxy', 1);
 
 // Middleware
 app.use(express.json());
@@ -14,17 +17,21 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Session configuration
 app.use(session({
-  secret: process.env.SESSION_SECRET || 'fraud-detection-secret-key',
+  secret: process.env.SESSION_SECRET || 'fraud-detection-secret-key-change-this',
   resave: false,
   saveUninitialized: false,
-  cookie: { secure: false, maxAge: 3600000 }
+  cookie: { 
+    secure: process.env.NODE_ENV === 'production', // true in production
+    httpOnly: true,
+    maxAge: 3600000 // 1 hour
+  }
 }));
 
 // View engine setup
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'backend/views'));
 
-// Import models AFTER app setup
+// Import models
 const Admin = require('./backend/models/Admin');
 const Transaction = require('./backend/models/Transaction');
 const AuditLog = require('./backend/models/AuditLog');
@@ -51,13 +58,18 @@ app.use('/export', exportRoutes);
 app.use('/upload', uploadRoutes);
 app.use('/settings', settingsRoutes);
 app.use('/audit', auditRoutes);
-app.use('/debug', debugRoutes);
+
 // Home route
 app.get('/', (req, res) => {
   if (req.session.adminId) {
     return res.redirect('/dashboard');
   }
   res.redirect('/auth/login');
+});
+
+// Health check endpoint
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'OK', timestamp: new Date().toISOString() });
 });
 
 // Database setup and server start
@@ -68,45 +80,28 @@ const startServer = async () => {
     console.log('✅ Database connection established');
 
     // Sync database
-    const isDevelopment = process.env.NODE_ENV === 'development';
-    
-    if (isDevelopment) {
-      console.log('⚠️  Development mode: Resetting database...');
-      await sequelize.sync({ force: true });
-      console.log('✅ Database reset and synced');
-      
-      // Create default admin
-      const adminExists = await Admin.findOne();
-      if (!adminExists) {
-        await Admin.create({
-          username: 'admin',
-          password: 'admin123',
-          email: 'admin@frauddetection.com'
-        });
-        console.log('✅ Default admin created: admin / admin123');
-      }
-    } else {
-      await sequelize.sync();
-      console.log('✅ Database synced');
-    }
+    await sequelize.sync({ alter: true });
+    console.log('Database synced');
 
     // Start server
-    app.listen(PORT, () => {
+    app.listen(PORT, '0.0.0.0', () => {
       console.log('\n🚀 Server is running!');
-      console.log(`📍 URL: http://localhost:${PORT}`);
-      console.log(`🔐 Login: http://localhost:${PORT}/auth/login`);
-      console.log(`📊 Dashboard: http://localhost:${PORT}/dashboard`);
-      console.log(`👤 Default credentials: admin / admin123\n`);
+      console.log(`📍 Environment: ${process.env.NODE_ENV || 'development'}`);
+      console.log(`📍 Port: ${PORT}`);
+      console.log(`🔐 Setup admin: /auth/setup\n`);
     });
 
   } catch (error) {
     console.error('❌ Failed to start server:', error.message);
-    console.error('\n💡 Troubleshooting:');
-    console.error('1. Make sure MySQL is running');
-    console.error('2. Check your .env database credentials');
-    console.error('3. Try: DROP DATABASE fraud_detection_db; CREATE DATABASE fraud_detection_db;\n');
+    console.error(error);
     process.exit(1);
   }
 };
 
 startServer();
+
+// Handle unhandled promise rejections
+process.on('unhandledRejection', (err) => {
+  console.error('Unhandled Promise Rejection:', err);
+  process.exit(1);
+});
