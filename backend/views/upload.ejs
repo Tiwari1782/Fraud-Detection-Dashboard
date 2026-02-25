@@ -1,0 +1,181 @@
+<%- include('partials/header') %>
+
+<div class="container-fluid">
+  <div class="row">
+    <!-- Sidebar -->
+    <nav class="col-md-auto sidebar">
+      <div class="position-sticky pt-3">
+        <ul class="nav flex-column">
+          <li class="nav-item">
+            <a class="nav-link" href="/dashboard">
+              <i class="fas fa-chart-line"></i>
+              Dashboard
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/transactions/add">
+              <i class="fas fa-plus-circle"></i>
+              Add Transaction
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/transactions/list">
+              <i class="fas fa-list-ul"></i>
+              All Transactions
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" href="/upload">
+              <i class="fas fa-cloud-upload-alt"></i>
+              Bulk Upload
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/export">
+              <i class="fas fa-file-export"></i>
+              Export Reports
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/audit">
+              <i class="fas fa-history"></i>
+              Audit Logs
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/settings">
+              <i class="fas fa-cog"></i>
+              Settings
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/auth/logout">
+              <i class="fas fa-sign-out-alt"></i>
+              Logout
+            </a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <div class="page-header fade-in">
+        <h1>
+          <i class="fas fa-cloud-upload-alt"></i>
+          Bulk Upload Transactions
+        </h1>
+      </div>
+
+      <% if (error) { %>
+        <div class="alert alert-danger fade-in">
+          <i class="fas fa-exclamation-triangle"></i>
+          <%= error %>
+        </div>
+      <% } %>
+
+      <% if (success) { %>
+        <div class="alert alert-success fade-in">
+          <i class="fas fa-check-circle"></i>
+          <%= success %>
+        </div>
+      <% } %>
+
+      <% if (results) { %>
+        <div class="alert alert-info fade-in">
+          <i class="fas fa-info-circle"></i>
+          <strong>Upload Results:</strong><br>
+          Total Rows: <%= results.total %><br>
+          Successful: <%= results.success %><br>
+          Failed: <%= results.failed %>
+        </div>
+      <% } %>
+
+      <div class="row fade-in">
+        <div class="col-md-8">
+          <div class="card shadow-lg">
+            <div class="card-header">
+              <i class="fas fa-file-upload"></i>
+              Upload CSV File
+            </div>
+            <div class="card-body">
+              <form method="POST" action="/upload" enctype="multipart/form-data">
+                <div class="mb-3">
+                  <label class="form-label">
+                    <i class="fas fa-file-csv"></i>
+                    Select CSV File
+                  </label>
+                  <input type="file" name="csvFile" class="form-control" accept=".csv" required>
+                  <div class="form-text">
+                    <i class="fas fa-info-circle"></i>
+                    CSV must have columns: amount, transaction_time, device_type, location
+                  </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary">
+                  <i class="fas fa-upload"></i>
+                  Upload & Process
+                </button>
+              </form>
+            </div>
+          </div>
+
+          <div class="card shadow-lg mt-4">
+            <div class="card-header">
+              <i class="fas fa-list-ol"></i>
+              CSV Format Instructions
+            </div>
+            <div class="card-body">
+              <ol>
+                <li><strong>Required Columns:</strong> amount, transaction_time, device_type, location</li>
+                <li><strong>Amount:</strong> Numeric value (e.g., 150.00)</li>
+                <li><strong>Transaction Time:</strong> ISO format (e.g., 2026-02-25T10:30:00)</li>
+                <li><strong>Device Type:</strong> Mobile, Desktop, Tablet, or POS</li>
+                <li><strong>Location:</strong> City or Country name</li>
+              </ol>
+              <a href="/upload/sample" class="btn btn-success">
+                <i class="fas fa-download"></i>
+                Download Sample CSV
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="card shadow-lg">
+            <div class="card-body">
+              <h5 class="card-title">
+                <i class="fas fa-info-circle"></i>
+                Bulk Upload Info
+              </h5>
+              <ul>
+                <li><i class="fas fa-check text-success"></i> Upload multiple transactions at once</li>
+                <li><i class="fas fa-robot text-primary"></i> AI fraud detection runs automatically</li>
+                <li><i class="fas fa-exclamation-triangle text-warning"></i> Invalid rows are skipped</li>
+                <li><i class="fas fa-sort-numeric-up text-info"></i> Maximum recommended: 1000 rows</li>
+                <li><i class="fas fa-clock text-secondary"></i> Processing time: ~1-2 seconds per row</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="card shadow-lg mt-3">
+            <div class="card-body">
+              <h5 class="card-title">
+                <i class="fas fa-exclamation-triangle text-warning"></i>
+                Important Notes
+              </h5>
+              <ul class="text-muted small">
+                <li>Ensure CSV encoding is UTF-8</li>
+                <li>No special characters in headers</li>
+                <li>Date format must be ISO 8601</li>
+                <li>Duplicates are not checked</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<%- include('partials/footer') %>
