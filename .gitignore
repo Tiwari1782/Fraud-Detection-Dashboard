@@ -1,0 +1,125 @@
+# ============================================
+# NODE MODULES
+# ============================================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+
+# ============================================
+# ENVIRONMENT VARIABLES
+# ============================================
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+.env.*.local
+
+# ============================================
+# UPLOADS & TEMPORARY FILES
+# ============================================
+uploads/*
+!uploads/.gitkeep
+*.tmp
+*.temp
+*.log
+
+# ============================================
+# DATABASE
+# ============================================
+*.sql
+*.sqlite
+*.db
+
+# ============================================
+# OPERATING SYSTEM FILES
+# ============================================
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+*~
+.directory
+
+# ============================================
+# IDE & EDITOR FILES
+# ============================================
+# VSCode
+.vscode/
+*.code-workspace
+
+# JetBrains IDEs
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Vim
+*.swp
+*.swo
+*~
+
+# Emacs
+*~
+\#*\#
+.\#*
+
+# ============================================
+# BUILD & DISTRIBUTION
+# ============================================
+dist/
+build/
+out/
+.cache/
+.parcel-cache/
+
+# ============================================
+# TESTING
+# ============================================
+coverage/
+*.lcov
+.nyc_output/
+test-results/
+
+# ============================================
+# MISC
+# ============================================
+*.pid
+*.seed
+*.pid.lock
+.npm
+.eslintcache
+.node_repl_history
+*.tgz
+.yarn-integrity
+
+# ============================================
+# PROJECT SPECIFIC
+# ============================================
+# Exported reports (optional - uncomment if you don't want to track exports)
+# exports/*.csv
+# exports/*.json
+# exports/*.pdf
+
+# Session files
+sessions/
+
+# Error logs
+logs/
+*.log
