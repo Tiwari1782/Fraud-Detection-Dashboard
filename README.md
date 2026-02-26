@@ -6,7 +6,7 @@
 
 **A real-time AI-powered fraud detection system with interactive dashboards, bulk processing, and comprehensive reporting**
 
-<a href="https://your-app-name.onrender.com/" target="_blank">
+<a href="https://fraud-detection-dashboard-muan.onrender.com/dashboard" target="_blank">
   <img src="https://img.shields.io/badge/🚀%20Live%20Demo-Visit%20Dashboard-2563eb?style=for-the-badge&labelColor=1e293b" alt="Live Demo" />
 </a>
 
